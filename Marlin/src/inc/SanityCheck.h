@@ -223,6 +223,8 @@
   #error "MIN_RETRACT is now MIN_AUTORETRACT and MAX_AUTORETRACT. Please update your Configuration_adv.h."
 #elif defined(ADVANCE)
   #error "ADVANCE was removed in Marlin 1.1.6. Please use LIN_ADVANCE."
+#elif defined(LIN_ADVANCE_E_D_RATIO)
+  #error "LIN_ADVANCE (1.5) no longer uses LIN_ADVANCE_E_D_RATIO. Check your configuration."
 #elif defined(NEOPIXEL_RGBW_LED)
   #error "NEOPIXEL_RGBW_LED is now NEOPIXEL_LED. Please update your configuration."
 #elif defined(UBL_MESH_INSET)
@@ -552,10 +554,6 @@ static_assert(X_MAX_LENGTH >= X_BED_SIZE && Y_MAX_LENGTH >= Y_BED_SIZE,
   #endif
 #endif
 
-#if ENABLED(LIN_ADVANCE) && !IS_CARTESIAN
-  #error "Sorry! LIN_ADVANCE is only compatible with Cartesian."
-#endif
-
 /**
  * Parking Extruder requirements
  */
@@ -836,6 +834,8 @@ static_assert(1 >= 0
     #error "AUTO_BED_LEVELING_UBL requires EEPROM_SETTINGS. Please update your configuration."
   #elif !WITHIN(GRID_MAX_POINTS_X, 3, 15) || !WITHIN(GRID_MAX_POINTS_Y, 3, 15)
     #error "GRID_MAX_POINTS_[XY] must be a whole number between 3 and 15."
+  #elif DISABLED(RESTORE_LEVELING_AFTER_G28)
+    #error "AUTO_BED_LEVELING_UBL (<=1.1.8) always has RESTORE_LEVELING_AFTER_G28 enabled. To keep this behavior, #define RESTORE_LEVELING_AFTER_G28. To keep it disabled comment out this line in SanityCheck.h."
   #else
     static_assert(WITHIN(UBL_PROBE_PT_1_X, MIN_PROBE_X, MAX_PROBE_X), "UBL_PROBE_PT_1_X can't be reached by the Z probe.");
     static_assert(WITHIN(UBL_PROBE_PT_2_X, MIN_PROBE_X, MAX_PROBE_X), "UBL_PROBE_PT_2_X can't be reached by the Z probe.");
