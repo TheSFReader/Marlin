@@ -55,16 +55,16 @@ void ServoStepper::enable(uint8_t newenabled) {
   if(newenabled) {
     if(! enabled) {
       servo[servoIndex].attach(0);
-      enabled = newenabled;
     }
   } else {
     if(enabled) {
       servo[servoIndex].detach();
-      enabled = newenabled;
     }
   }
+  enabled = newenabled;
   
 }
+
 
  uint8_t ServoStepper::isEnabled() {
   return servo[servoIndex].attached();
@@ -79,12 +79,11 @@ uint8_t ServoStepper::getDir() {
 }
 
 void ServoStepper::doStep(uint8_t stepByte) {
-  
-  if(previousStepWrite != stepByte && previousStepWrite == 0) {
+  if(previousStepWrite != stepByte) {
     if(currentDir) {
-      currentPosition--;
-    } else {
       currentPosition++;
+    } else {
+      currentPosition--;
     }
     if(! servo[servoIndex].attached()) {
      servo[servoIndex].attach(0);
