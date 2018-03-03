@@ -31,6 +31,7 @@ class libServo : public Servo {
 public:
     int8_t attach(const int pin);
     int8_t attach(const int pin, const int min, const int max);
+    int8_t reattach(); // re-attaches to its given pin without re-setting the min-max values (supposes noone needs the pin for anyting else
     void move(const int value);
 private:
     uint16_t min_ticks;

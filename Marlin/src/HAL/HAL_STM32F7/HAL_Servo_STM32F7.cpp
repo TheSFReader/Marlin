@@ -38,6 +38,10 @@ int8_t libServo::attach(const int pin, const int min, const int max) {
   return Servo::attach(pin, min, max);
 }
 
+int8_t libServo::reattach() {
+  return Servo::reattach();
+}
+
 void libServo::move(const int value) {
   if (this->attach(0) >= 0) {
     this->write(value);

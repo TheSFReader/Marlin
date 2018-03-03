@@ -56,6 +56,10 @@
 
 #include "HAL.h"
 
+
+#include "../core/serial.h"
+
+
 #if HAS_SERVOS && !(IS_32BIT_TEENSY || defined(TARGET_LPC1768))
 
 //#include <Arduino.h>
@@ -100,8 +104,15 @@ int8_t Servo::attach(int pin, int min, int max) {
 
   if (this->servoIndex >= MAX_SERVOS) return -1;
 
-  if (pin > 0) servo_info[this->servoIndex].Pin.nbr = pin;
+  if (pin > 0) {
+    servo_info[this->servoIndex].Pin.nbr = pin;
+    SERIAL_ECHOPAIR("Attache and Allocate  Servo #", this->servoIndex);
+    SERIAL_ECHOPAIR("(", servo_info[this->servoIndex].Pin.nbr);
+    SERIAL_CHAR(')');
+    SERIAL_EOL();
+  }
   pinMode(servo_info[this->servoIndex].Pin.nbr, OUTPUT); // set servo pin to output
+
 
   // todo min/max check: abs(min - MIN_PULSE_WIDTH) /4 < 128
   this->min = (MIN_PULSE_WIDTH - min) / 4; //resolution of min/max is 4 uS
@@ -115,10 +126,26 @@ int8_t Servo::attach(int pin, int min, int max) {
   return this->servoIndex;
 }
 
+
+
 void Servo::detach() {
   servo_info[this->servoIndex].Pin.isActive = false;
   timer16_Sequence_t timer = SERVO_INDEX_TO_TIMER(servoIndex);
   if (!isTimerActive(timer)) finISR(timer);
+}
+
+
+int8_t Servo::reattach() {
+
+  if (this->servoIndex >= MAX_SERVOS) return -1;  
+  pinMode(servo_info[this->servoIndex].Pin.nbr, OUTPUT); // set servo pin to output
+
+  // initialize the timer if it has not already been initialized
+  timer16_Sequence_t timer = SERVO_INDEX_TO_TIMER(servoIndex);
+  if (!isTimerActive(timer)) initISR(timer);
+  servo_info[this->servoIndex].Pin.isActive = true;  // this must be set after the check for isTimerActive
+
+  return this->servoIndex;
 }
 
 void Servo::write(int value) {
@@ -156,7 +183,7 @@ void Servo::move(int value) {
   static_assert(COUNT(servo_delay) == NUM_SERVOS, "SERVO_DELAY must be an array NUM_SERVOS long.");
   if (this->attach(0) >= 0) {
     this->write(value);
-    delay(servo_delay[this->servoIndex]);
+    safe_delay(servo_delay[this->servoIndex]);
     #if ENABLED(DEACTIVATE_SERVOS_AFTER_MOVE)
       this->detach();
     #endif
