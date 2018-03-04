@@ -43,7 +43,7 @@ int8_t libServo::reattach() {
 }
 
 void libServo::move(const int value) {
-  if (this->attach(0) >= 0) {
+  if (this->reattach() >= 0) {
     this->write(value);
     safe_delay(SERVO_DELAY);
     #if ENABLED(DEACTIVATE_SERVOS_AFTER_MOVE)

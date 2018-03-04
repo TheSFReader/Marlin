@@ -54,7 +54,7 @@ ServoStepper::ServoStepper(uint8_t servoNr) {
 void ServoStepper::enable(uint8_t newenabled) {
   if(newenabled) {
     if(! enabled) {
-      servo[servoIndex].attach(0);
+      servo[servoIndex].reattach();
     }
   } else {
     if(enabled) {
