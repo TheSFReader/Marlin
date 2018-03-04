@@ -14,6 +14,9 @@ class libServo : public Servo {
      uint16_t min_ticks;
      uint16_t max_ticks;
      uint8_t servoIndex;               // index into the channel data for this servo
+     int inputpin;
+     int inputmin;
+     int inputmax;
 };
 
 #endif // _HAL_SERVO_TEENSY_H_

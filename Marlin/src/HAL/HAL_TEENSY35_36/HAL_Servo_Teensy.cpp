@@ -9,11 +9,16 @@ int8_t libServo::attach(const int pin) {
 }
 
 int8_t libServo::attach(const int pin, const int min, const int max) {
+  inputpin = pin;
+  inputmin = min;
+  inputmax = max;
   return Servo::attach(pin, min, max);
 }
 
 int8_t libServo::reattach() {
-  return Servo::reattach();
+  // Not sure about the "native" implementation of the Teensy servo lib, 
+  // so "emulate" the reattach by attaching woith the original arguments.
+  return Servo::attach(inputpin, inputmin, inputmax);
 }
 
 void libServo::move(const int value) {
