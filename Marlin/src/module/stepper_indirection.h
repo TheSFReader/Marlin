@@ -77,7 +77,7 @@
 
 
 #if ENABLED(HAVE_SERVOSTEPPER)
-#include "../module/servostepper.h"
+#include "../feature/servostepper.h"
 #endif
 
 // X Stepper
