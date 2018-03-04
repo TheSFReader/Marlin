@@ -56,9 +56,9 @@
 
 #include "HAL.h"
 
-
+#if ENABLED(PINS_DEBUGGING)
 #include "../core/serial.h"
-
+#endif
 
 #if HAS_SERVOS && !(IS_32BIT_TEENSY || defined(TARGET_LPC1768))
 
@@ -106,10 +106,12 @@ int8_t Servo::attach(int pin, int min, int max) {
 
   if (pin > 0) {
     servo_info[this->servoIndex].Pin.nbr = pin;
-    SERIAL_ECHOPAIR("Attache and Allocate  Servo #", this->servoIndex);
+#if ENABLED(PINS_DEBUGGING)
+    SERIAL_ECHOPAIR("Attach and Allocate  Servo #", this->servoIndex);
     SERIAL_ECHOPAIR("(", servo_info[this->servoIndex].Pin.nbr);
     SERIAL_CHAR(')');
     SERIAL_EOL();
+#endif
   }
   pinMode(servo_info[this->servoIndex].Pin.nbr, OUTPUT); // set servo pin to output
 

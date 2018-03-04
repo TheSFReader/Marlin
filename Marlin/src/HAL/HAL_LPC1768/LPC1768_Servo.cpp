@@ -62,6 +62,10 @@
 
 #include "../../inc/MarlinConfig.h"
 
+#if ENABLED(PINS_DEBUGGING)
+#include "../../core/serial.h"
+#endif
+
 #if HAS_SERVOS && defined(TARGET_LPC1768)
 
   #include "LPC1768_PWM.h"
@@ -94,9 +98,17 @@
 
     if (this->servoIndex >= MAX_SERVOS) return -1;
 
-    if (pin > 0) servo_info[this->servoIndex].Pin.nbr = pin;  // only assign a pin value if the pin info is
-                                                              // greater than zero. This way the init routine can
-                                                              // assign the pin and the MOVE command only needs the value.
+    if (pin > 0) {
+      servo_info[this->servoIndex].Pin.nbr = pin;  // only assign a pin value if the pin info is
+                                                   // greater than zero. This way the init routine can
+                                                   // assign the pin and the MOVE command only needs the value.
+#if ENABLED(PINS_DEBUGGING)
+      SERIAL_ECHOPAIR("Attach and Allocate  Servo #", this->servoIndex);
+      SERIAL_ECHOPAIR("(", servo_info[this->servoIndex].Pin.nbr);
+      SERIAL_CHAR(')');
+      SERIAL_EOL();
+#endif
+    }
 
     this->min = MIN_PULSE_WIDTH; //resolution of min/max is 1 uS
     this->max = MAX_PULSE_WIDTH;
