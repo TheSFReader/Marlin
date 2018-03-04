@@ -110,6 +110,12 @@
     servo_info[this->servoIndex].Pin.isActive = false;
   }
 
+  int8_t libServo::reattach() {
+    if (this->servoIndex >= MAX_SERVOS) return -1;
+    servo_info[this->servoIndex].Pin.isActive = true;
+    return this->servoIndex;
+  }
+
   void Servo::write(int value) {
     if (value < MIN_PULSE_WIDTH) { // treat values less than 544 as angles in degrees (valid values in microseconds are handled as microseconds)
       value = map(constrain(value, 0, 180), 0, 180, SERVO_MIN(), SERVO_MAX());
@@ -148,7 +154,7 @@
     static_assert(COUNT(servo_delay) == NUM_SERVOS, "SERVO_DELAY must be an array NUM_SERVOS long.");
     if (this->attach(0) >= 0) {    // notice the pin number is zero here
       this->write(value);
-      delay(servo_delay[this->servoIndex]);
+      safe_delay(servo_delay[this->servoIndex]);
       #if ENABLED(DEACTIVATE_SERVOS_AFTER_MOVE)
         this->detach();
         LPC1768_PWM_detach_pin(servo_info[this->servoIndex].Pin.nbr);  // shut down the PWM signal

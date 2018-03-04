@@ -86,7 +86,7 @@ void ServoStepper::doStep(uint8_t stepByte) {
       currentPosition--;
     }
     if(! servo[servoIndex].attached()) {
-     servo[servoIndex].attach(0);
+     servo[servoIndex].reattach();
     }
     servo[servoIndex].writeMicroseconds(currentPosition);
   }
