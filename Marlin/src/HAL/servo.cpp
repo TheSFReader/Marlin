@@ -56,6 +56,10 @@
 
 #include "HAL.h"
 
+#if ENABLED(PINS_DEBUGGING)
+#include "../core/serial.h"
+#endif
+
 #if HAS_SERVOS && !(IS_32BIT_TEENSY || defined(TARGET_LPC1768))
 
 //#include <Arduino.h>
@@ -100,8 +104,17 @@ int8_t Servo::attach(int pin, int min, int max) {
 
   if (this->servoIndex >= MAX_SERVOS) return -1;
 
-  if (pin > 0) servo_info[this->servoIndex].Pin.nbr = pin;
+  if (pin > 0) {
+    servo_info[this->servoIndex].Pin.nbr = pin;
+    #if ENABLED(PINS_DEBUGGING)
+      SERIAL_ECHOPAIR("Attach and Allocate  Servo #", this->servoIndex);
+      SERIAL_ECHOPAIR("(", servo_info[this->servoIndex].Pin.nbr);
+      SERIAL_CHAR(')');
+      SERIAL_EOL();
+    #endif
+  }
   pinMode(servo_info[this->servoIndex].Pin.nbr, OUTPUT); // set servo pin to output
+
 
   // todo min/max check: abs(min - MIN_PULSE_WIDTH) /4 < 128
   this->min = (MIN_PULSE_WIDTH - min) / 4; //resolution of min/max is 4 uS
@@ -119,6 +132,18 @@ void Servo::detach() {
   servo_info[this->servoIndex].Pin.isActive = false;
   timer16_Sequence_t timer = SERVO_INDEX_TO_TIMER(servoIndex);
   if (!isTimerActive(timer)) finISR(timer);
+}
+
+int8_t Servo::reattach() {
+  if (this->servoIndex >= MAX_SERVOS) return -1;
+  pinMode(servo_info[this->servoIndex].Pin.nbr, OUTPUT); // set servo pin to output
+
+  // initialize the timer if it has not already been initialized
+  timer16_Sequence_t timer = SERVO_INDEX_TO_TIMER(servoIndex);
+  if (!isTimerActive(timer)) initISR(timer);
+  servo_info[this->servoIndex].Pin.isActive = true;  // this must be set after the check for isTimerActive
+
+  return this->servoIndex;
 }
 
 void Servo::write(int value) {
@@ -154,9 +179,9 @@ bool Servo::attached() { return servo_info[this->servoIndex].Pin.isActive; }
 void Servo::move(int value) {
   constexpr uint16_t servo_delay[] = SERVO_DELAY;
   static_assert(COUNT(servo_delay) == NUM_SERVOS, "SERVO_DELAY must be an array NUM_SERVOS long.");
-  if (this->attach(0) >= 0) {
+  if (this->reattach() >= 0) {
     this->write(value);
-    delay(servo_delay[this->servoIndex]);
+    safe_delay(servo_delay[this->servoIndex]);
     #if ENABLED(DEACTIVATE_SERVOS_AFTER_MOVE)
       this->detach();
     #endif
@@ -164,4 +189,3 @@ void Servo::move(int value) {
 }
 
 #endif // HAS_SERVOS
-

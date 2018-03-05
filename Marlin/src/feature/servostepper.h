@@ -4,7 +4,6 @@
  *
  * Based on Sprinter and grbl.
  * Copyright (C) 2011 Camiel Gubbels / Erik van der Zalm
- * Copyright (C) 2017 Victor Perez
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,36 +20,30 @@
  *
  */
 
-#ifdef STM32F7
+/**
+ * servo stepper : allow the use of a servo in place of a stepper.
+ */
 
-#include "../../inc/MarlinConfig.h"
+#ifndef SERVOSTEPPER_H
+#define SERVOSTEPPER_H
 
-#if HAS_SERVOS
+class ServoStepper {
+  public:
+    ServoStepper(const uint8_t servoIndex);
+    void enable(const uint8_t enabled);
+    uint8_t isEnabled();
+    void setDir(const uint8_t direction);
+    uint8_t getDir();
+    void doStep(const uint8_t step);
+    uint8_t getStep();
 
-#include "HAL_Servo_STM32F7.h"
+  private:
+    uint8_t enabled;
+    uint8_t servoIndex;               // index into the channel data for this servo
+    uint16_t currentPosition;
+    uint16_t lastPositionSent;
+    uint8_t currentDir;
+    uint8_t previousStepWrite;
+};
 
-int8_t libServo::attach(const int pin) {
-  if (this->servoIndex >= MAX_SERVOS) return -1;
-  return super::attach(pin);
-}
-
-int8_t libServo::attach(const int pin, const int min, const int max) {
-  return super::attach(pin, min, max);
-}
-
-int8_t libServo::reattach() {
-  return super::reattach();
-}
-
-void libServo::move(const int value) {
-  if (this->reattach() >= 0) {
-    this->write(value);
-    delay(SERVO_DELAY);
-    #if ENABLED(DEACTIVATE_SERVOS_AFTER_MOVE)
-      this->detach();
-    #endif
-  }
-}
-#endif // HAS_SERVOS
-
-#endif // STM32F7
+#endif // SERVOSTEPPER_H

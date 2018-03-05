@@ -4,18 +4,26 @@
 #include "../../inc/MarlinConfig.h"
 
 int8_t libServo::attach(const int pin) {
-  if (this->servoIndex >= MAX_SERVOS) return -1;
-  return Servo::attach(pin);
+  return this->servoIndex < MAX_SERVOS ? super::attach(pin) : -1;
 }
 
 int8_t libServo::attach(const int pin, const int min, const int max) {
-  return Servo::attach(pin, min, max);
+  inputpin = pin;
+  inputmin = min;
+  inputmax = max;
+  return super::attach(pin, min, max);
+}
+
+int8_t libServo::reattach() {
+  // Not sure about the "native" implementation of the Teensy servo lib,
+  // so "emulate" the reattach by attaching woith the original arguments.
+  return super::attach(inputpin, inputmin, inputmax);
 }
 
 void libServo::move(const int value) {
-  if (this->attach(0) >= 0) {
+  if (this->reattach() >= 0) {
     this->write(value);
-    delay(SERVO_DELAY);
+    safe_delay(SERVO_DELAY);
     #if ENABLED(DEACTIVATE_SERVOS_AFTER_MOVE)
       this->detach();
     #endif

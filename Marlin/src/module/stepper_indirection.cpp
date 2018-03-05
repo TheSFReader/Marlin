@@ -577,3 +577,19 @@
 
 #endif // HAVE_L6470DRIVER
 
+
+#if ENABLED(HAVE_SERVOSTEPPER)
+
+  #define _SERVOSTEPPER_DEFINE(ST) ServoStepper stepper##ST(SERVO_##ST##_INDEX)
+
+  #if ENABLED(X_IS_SERVO)
+    _SERVOSTEPPER_DEFINE(X);
+  #endif
+  #if ENABLED(Y_IS_SERVO)
+    _SERVOSTEPPER_DEFINE(Y);
+  #endif
+  #if ENABLED(Z_IS_SERVO)
+    _SERVOSTEPPER_DEFINE(Z);
+  #endif
+
+#endif // HAVE_SERVOSTEPPER

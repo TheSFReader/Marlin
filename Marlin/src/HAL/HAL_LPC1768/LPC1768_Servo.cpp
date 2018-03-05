@@ -62,6 +62,10 @@
 
 #include "../../inc/MarlinConfig.h"
 
+#if ENABLED(PINS_DEBUGGING)
+  #include "../../core/serial.h"
+#endif
+
 #if HAS_SERVOS && defined(TARGET_LPC1768)
 
   #include "LPC1768_PWM.h"
@@ -94,9 +98,17 @@
 
     if (this->servoIndex >= MAX_SERVOS) return -1;
 
-    if (pin > 0) servo_info[this->servoIndex].Pin.nbr = pin;  // only assign a pin value if the pin info is
-                                                              // greater than zero. This way the init routine can
-                                                              // assign the pin and the MOVE command only needs the value.
+    if (pin > 0) {
+      servo_info[this->servoIndex].Pin.nbr = pin;  // only assign a pin value if the pin info is
+                                                   // greater than zero. This way the init routine can
+                                                   // assign the pin and the MOVE command only needs the value.
+      #if ENABLED(PINS_DEBUGGING)
+        SERIAL_ECHOPAIR("Attach and Allocate  Servo #", this->servoIndex);
+        SERIAL_ECHOPAIR("(", servo_info[this->servoIndex].Pin.nbr);
+        SERIAL_CHAR(')');
+        SERIAL_EOL();
+      #endif
+    }
 
     this->min = MIN_PULSE_WIDTH; //resolution of min/max is 1 uS
     this->max = MAX_PULSE_WIDTH;
@@ -110,6 +122,12 @@
     servo_info[this->servoIndex].Pin.isActive = false;
   }
 
+  int8_t libServo::reattach() {
+    if (this->servoIndex >= MAX_SERVOS) return -1;
+    servo_info[this->servoIndex].Pin.isActive = true;
+    return this->servoIndex;
+  }
+
   void Servo::write(int value) {
     if (value < MIN_PULSE_WIDTH) { // treat values less than 544 as angles in degrees (valid values in microseconds are handled as microseconds)
       value = map(constrain(value, 0, 180), 0, 180, SERVO_MIN(), SERVO_MAX());
@@ -121,7 +139,7 @@
 
   void Servo::writeMicroseconds(int value) {
     // calculate and store the values for the given channel
-    byte channel = this->servoIndex;
+    const byte channel = this->servoIndex;
     if (channel < MAX_SERVOS) {  // ensure channel is valid
       // ensure pulse width is valid
       value = constrain(value, SERVO_MIN(), SERVO_MAX()) - (TRIM_DURATION);
@@ -130,7 +148,6 @@
       servo_info[channel].pulse_width = value;
       LPC1768_PWM_attach_pin(servo_info[this->servoIndex].Pin.nbr, MIN_PULSE_WIDTH, MAX_PULSE_WIDTH, this->servoIndex);
       LPC1768_PWM_write(servo_info[this->servoIndex].Pin.nbr, value);
-
     }
   }
 
@@ -146,9 +163,9 @@
   void Servo::move(const int value) {
     constexpr uint16_t servo_delay[] = SERVO_DELAY;
     static_assert(COUNT(servo_delay) == NUM_SERVOS, "SERVO_DELAY must be an array NUM_SERVOS long.");
-    if (this->attach(0) >= 0) {    // notice the pin number is zero here
+    if (this->reattach() >= 0) {
       this->write(value);
-      delay(servo_delay[this->servoIndex]);
+      safe_delay(servo_delay[this->servoIndex]);
       #if ENABLED(DEACTIVATE_SERVOS_AFTER_MOVE)
         this->detach();
         LPC1768_PWM_detach_pin(servo_info[this->servoIndex].Pin.nbr);  // shut down the PWM signal

@@ -89,9 +89,10 @@
   class Servo {
     public:
       Servo();
-      int8_t attach(int pin);            // attach the given pin to the next free channel, set pinMode, return channel number (-1 on fail)
+      int8_t attach(int pin);            // attach the given pin to the next free channel, set pinMode, return channel number (-1 on fail) and sets min/max with default values
       int8_t attach(int pin, int min, int max); // as above but also sets min and max values for writes.
       void detach();
+      int8_t reattach();                 // re-attach to the given pin without resetting min/max (assumes nothing else needs the pin)
       void write(int value);             // if value is < 200 it is treated as an angle, otherwise as pulse width in microseconds
       void writeMicroseconds(int value); // write pulse width in microseconds
       void move(int value);              // attach the servo, then move to value

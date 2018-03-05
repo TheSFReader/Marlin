@@ -31,17 +31,21 @@
 
 int8_t libServo::attach(const int pin) {
   if (this->servoIndex >= MAX_SERVOS) return -1;
-  return Servo::attach(pin);
+  return super::attach(pin);
 }
 
 int8_t libServo::attach(const int pin, const int min, const int max) {
-  return Servo::attach(pin, min, max);
+  return super::attach(pin, min, max);
+}
+
+int8_t libServo::reattach() {
+  return super::reattach();
 }
 
 void libServo::move(const int value) {
-  if (this->attach(0) >= 0) {
+  if (this->reattach() >= 0) {
     this->write(value);
-    delay(SERVO_DELAY);
+    safe_delay(SERVO_DELAY);
     #if ENABLED(DEACTIVATE_SERVOS_AFTER_MOVE)
       this->detach();
     #endif

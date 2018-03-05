@@ -441,10 +441,10 @@ script:
   - cp Marlin/Configuration_adv.h Marlin/src/config/default/Configuration_adv.h
   - build_marlin_pio ${TRAVIS_BUILD_DIR} ${TEST_PLATFORM}
   #
-  # Enable VIKI2, SDSUPPORT
+  # Enable VIKI2, SDSUPPORT, HAVE_SERVOSTEPPER, X_IS_SERVO
   #
   - restore_configs
-  - opt_set MOTHERBOARD BOARD_RAMPS_14_RE_ARM_EFB
+  - opt_set MOTHERBOARD BOARD_RAMPS_14_RE_ARM_EFB HAVE_SERVOSTEPPER X_IS_SERVO
   - cp Marlin/Configuration.h Marlin/src/config/default/Configuration.h
   - cp Marlin/Configuration_adv.h Marlin/src/config/default/Configuration_adv.h
   - opt_enable VIKI2 SDSUPPORT
