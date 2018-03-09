@@ -31,11 +31,15 @@
 
 int8_t libServo::attach(const int pin) {
   if (this->servoIndex >= MAX_SERVOS) return -1;
-  return Servo::attach(pin);
+  return super::attach(pin);
 }
 
 int8_t libServo::attach(const int pin, const int min, const int max) {
-  return Servo::attach(pin, min, max);
+  return super::attach(pin, min, max);
+}
+
+int8_t libServo::reattach() {
+  return super::reattach();
 }
 
 int8_t libServo::reattach() {

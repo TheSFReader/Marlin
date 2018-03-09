@@ -581,7 +581,7 @@
 #if ENABLED(HAVE_SERVOSTEPPER)
 
   #define _SERVOSTEPPER_DEFINE(ST) ServoStepper stepper##ST(SERVO_##ST##_INDEX)
-  
+
   #if ENABLED(X_IS_SERVO)
     _SERVOSTEPPER_DEFINE(X);
   #endif
@@ -592,4 +592,4 @@
     _SERVOSTEPPER_DEFINE(Z);
   #endif
 
-#endif// HAVE_SERVOSTEPPER
+#endif // HAVE_SERVOSTEPPER

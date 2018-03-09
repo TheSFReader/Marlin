@@ -1688,19 +1688,15 @@ static_assert(COUNT(sanity_arr_3) <= XYZE_N, "DEFAULT_MAX_ACCELERATION has too m
   #endif
 #endif
 
-
-# if ENABLED (HAVE_SERVOSTEPPER)
-  #if !defined(NUM_SERVOS) || (NUM_SERVOS == 0)
-    #error "HAVE_SERVOSTEPPER needs to have a correct servo configuration (NUM_SERVOS) and can be in conflict wit some servos (probes) and pins"
-  #endif
-  
-  #if !( ENABLED( X_IS_SERVO ) \
-      || ENABLED( Y_IS_SERVO ) \
-      || ENABLED( Z_IS_SERVO ) \
-    )
+/**
+ * Servo-based stepper requirements
+ */
+#if ENABLED(HAVE_SERVOSTEPPER)
+  #if !defined(NUM_SERVOS) || !NUM_SERVOS
+    #error "HAVE_SERVOSTEPPER requires NUM_SERVOS > 0."
+  #elif DISABLED(X_IS_SERVO) && DISABLED(Y_IS_SERVO) && DISABLED(Z_IS_SERVO)
     #error "HAVE_SERVOSTEPPER requires at least one servo stepper to be set."
   #endif
-  
-#endif // HAVE_SERVOSTEPPER
+#endif
 
 #endif // _SANITYCHECK_H_

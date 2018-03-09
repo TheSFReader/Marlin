@@ -1618,4 +1618,29 @@
                               // Default behaviour is limited to Z axis only.
 #endif
 
+/**
+ * Servo Stepper
+ *
+ * Intercept stepper compmands and redirect them to one or more sevos.
+ * Can be used to replace a stepper motor on an axis with a more lightweight
+ * servo where applicable (e.g., laser, vinyl cutter, plotter, etc.)
+ * When enabling Servo to replace a stepper, select the servo to use for the axis.
+ *
+ * The servo pin must be accessible/unused, so watch out for conflict with
+ *   - FILAMENT_RUNOUT on SERVO_INDEX 3,
+ *   - Servo probes,
+ *   - BLTOUCH, which uses servo pins.
+ *
+ * Only single X, Y and Z axes are currently supported.
+ */
+//#define HAVE_SERVOSTEPPER
+#if ENABLED(HAVE_SERVOSTEPPER)
+  //#define X_IS_SERVO
+  //#define Y_IS_SERVO
+  //#define Z_IS_SERVO
+  #define SERVO_X_INDEX 0
+  #define SERVO_Y_INDEX 1
+  #define SERVO_Z_INDEX 2
+#endif // HAVE_SERVOSTEPPER
+
 #endif // CONFIGURATION_ADV_H

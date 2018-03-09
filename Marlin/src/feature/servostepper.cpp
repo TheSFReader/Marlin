@@ -21,80 +21,47 @@
  */
 
 /**
- * servo stepper : allow the use of a servo in place of a stepper. 
- *
+ * servostepper.cpp - Enable the use of a servo in place of a stepper.
  */
 
-
-
 #include "../inc/MarlinConfig.h"
-
-
 
 #if ENABLED(HAVE_SERVOSTEPPER)
 
 #include "servostepper.h"
-
 #include "../module/servo.h"
-
-
 
 extern Servo servo[NUM_SERVOS];
 
-ServoStepper::ServoStepper(uint8_t servoNr) {
+ServoStepper::ServoStepper(const uint8_t servoNr) {
   servoIndex = servoNr;
   currentPosition = 1500;
-  currentDir = 0; 
+  currentDir = 0;
   previousStepWrite = 0;
   enabled = 0;
 }
 
-
-
-void ServoStepper::enable(uint8_t newenabled) {
-  if(newenabled) {
-    if(! enabled) {
-      servo[servoIndex].reattach();
-    }
-  } else {
-    if(enabled) {
-      servo[servoIndex].detach();
-    }
+void ServoStepper::enable(const uint8_t newenabled) {
+  if (newenabled) {
+    if (!enabled) servo[servoIndex].reattach();
   }
+  else if (enabled) servo[servoIndex].detach();
   enabled = newenabled;
-  
 }
 
- uint8_t ServoStepper::isEnabled() {
-  return servo[servoIndex].attached();
- }
- 
-void ServoStepper::setDir(uint8_t direction) {
-  currentDir = direction;
-}
+uint8_t ServoStepper::isEnabled() { return servo[servoIndex].attached(); }
 
-uint8_t ServoStepper::getDir() {
-  return currentDir;
-}
+void ServoStepper::setDir(const uint8_t direction) { currentDir = direction; }
 
-void ServoStepper::doStep(uint8_t stepByte) {
-  
-  if(previousStepWrite != stepByte) {
-    if(currentDir) {
-      currentPosition++;
-    } else {
-      currentPosition--;
-    }
-    if(! servo[servoIndex].attached()) {
-     servo[servoIndex].reattach();
-    }
+uint8_t ServoStepper::getDir() { return currentDir; }
+
+void ServoStepper::doStep(const uint8_t stepByte) {
+  if (previousStepWrite != stepByte) {
+    currentDir ? currentPosition++ : currentPosition--;
+    if (!servo[servoIndex].attached()) servo[servoIndex].reattach();
     servo[servoIndex].writeMicroseconds(currentPosition);
   }
   previousStepWrite = stepByte;
 }
 
-
-
-
 #endif // HAVE_SERVOSTEPPER
-

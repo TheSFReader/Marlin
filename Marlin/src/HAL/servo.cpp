@@ -106,12 +106,12 @@ int8_t Servo::attach(int pin, int min, int max) {
 
   if (pin > 0) {
     servo_info[this->servoIndex].Pin.nbr = pin;
-#if ENABLED(PINS_DEBUGGING)
-    SERIAL_ECHOPAIR("Attach and Allocate  Servo #", this->servoIndex);
-    SERIAL_ECHOPAIR("(", servo_info[this->servoIndex].Pin.nbr);
-    SERIAL_CHAR(')');
-    SERIAL_EOL();
-#endif
+    #if ENABLED(PINS_DEBUGGING)
+      SERIAL_ECHOPAIR("Attach and Allocate  Servo #", this->servoIndex);
+      SERIAL_ECHOPAIR("(", servo_info[this->servoIndex].Pin.nbr);
+      SERIAL_CHAR(')');
+      SERIAL_EOL();
+    #endif
   }
   pinMode(servo_info[this->servoIndex].Pin.nbr, OUTPUT); // set servo pin to output
 
@@ -128,18 +128,14 @@ int8_t Servo::attach(int pin, int min, int max) {
   return this->servoIndex;
 }
 
-
-
 void Servo::detach() {
   servo_info[this->servoIndex].Pin.isActive = false;
   timer16_Sequence_t timer = SERVO_INDEX_TO_TIMER(servoIndex);
   if (!isTimerActive(timer)) finISR(timer);
 }
 
-
 int8_t Servo::reattach() {
-
-  if (this->servoIndex >= MAX_SERVOS) return -1;  
+  if (this->servoIndex >= MAX_SERVOS) return -1;
   pinMode(servo_info[this->servoIndex].Pin.nbr, OUTPUT); // set servo pin to output
 
   // initialize the timer if it has not already been initialized
@@ -193,4 +189,3 @@ void Servo::move(int value) {
 }
 
 #endif // HAS_SERVOS
-

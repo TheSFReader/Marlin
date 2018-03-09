@@ -77,7 +77,7 @@
 
 
 #if ENABLED(HAVE_SERVOSTEPPER)
-#include "../feature/servostepper.h"
+  #include "../feature/servostepper.h"
 #endif
 
 // X Stepper
@@ -670,7 +670,5 @@
   #define NORM_E_DIR() E0_DIR_WRITE(!INVERT_E0_DIR)
   #define REV_E_DIR() E0_DIR_WRITE(INVERT_E0_DIR)
 #endif
-
-
 
 #endif // STEPPER_INDIRECTION_H
