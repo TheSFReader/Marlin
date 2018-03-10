@@ -1634,14 +1634,14 @@
  *
  * Only single X, Y and Z axes are currently supported.
  */
-//#define HAVE_SERVOSTEPPER
+#define HAVE_SERVOSTEPPER
 #if ENABLED(HAVE_SERVOSTEPPER)
   //#define X_IS_SERVO
   //#define Y_IS_SERVO
-  //#define Z_IS_SERVO
-  #define SERVO_X_INDEX 0
+  #define Z_IS_SERVO
+  #define SERVO_Z_INDEX 0
   #define SERVO_Y_INDEX 1
-  #define SERVO_Z_INDEX 2
+  //#define SERVO_Z_INDEX 2
 #endif // HAVE_SERVOSTEPPER
 
 #endif // CONFIGURATION_ADV_H
