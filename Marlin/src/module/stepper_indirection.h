@@ -75,6 +75,11 @@
   void L6470_init();
 #endif
 
+#if ENABLED(HAVE_SERVOSTEPPER)
+  #include "../feature/servostepper.h"
+  void servostepper_init();
+#endif
+
 // X Stepper
 #if ENABLED(HAVE_L6470DRIVER) && ENABLED(X_IS_L6470)
   extern L6470 stepperX;
@@ -511,5 +516,31 @@
   #define NORM_E_DIR() E0_DIR_WRITE(!INVERT_E0_DIR)
   #define REV_E_DIR() E0_DIR_WRITE(INVERT_E0_DIR)
 #endif
+
+
+
+#if ENABLED(HAVE_SERVOSTEPPER) && ENABLED(X_IS_SERVO)
+  #undef X_ENABLE_INIT
+  #undef X_ENABLE_WRITE
+  #undef X_ENABLE_READ
+  #undef X_DIR_INIT
+  #undef X_DIR_WRITE
+  #undef X_DIR_READ
+  #undef X_STEP_INIT
+  #undef X_STEP_WRITE
+  #undef X_STEP_READ
+
+  extern ServoStepper stepperX;
+  #define X_ENABLE_INIT NOOP
+  #define X_ENABLE_WRITE(STATE) (stepperX.enable(STATE))
+  #define X_ENABLE_READ (stepperX.isEnabled())
+  #define X_DIR_INIT NOOP
+  #define X_DIR_WRITE(STATE) (stepperX.setDir(STATE))
+  #define X_DIR_READ (stepperX.getDir())
+  #define X_STEP_INIT NOOP
+  #define X_STEP_WRITE(STATE) (stepperX.doStep(STATE))
+  #define X_STEP_READ (stepperX.getStep())
+#endif
+
 
 #endif // STEPPER_INDIRECTION_H

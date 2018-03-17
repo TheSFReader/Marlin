@@ -55,7 +55,6 @@
  *  attach(pin )  - Attaches a servo motor to an i/o pin.
  *  attach(pin, min, max  ) - Attaches to a pin setting min and max values in microseconds
  *  default min is 544, max is 2400
- *
  *  write()     - Sets the servo angle in degrees.  (invalid angle that is valid as pulse in microseconds is treated as microseconds)
  *  writeMicroseconds() - Sets the servo pulse width in microseconds
  *  read()      - Gets the last written servo pulse width as an angle between 0 and 180.
@@ -100,6 +99,7 @@
       int read();                        // returns current pulse width as an angle between 0 and 180 degrees
       int readMicroseconds();            // returns current pulse width in microseconds for this servo (was read_us() in first release)
       bool attached();                   // return true if this servo is attached, otherwise false
+      int8_t reattach();                 // re-attaches to its given pin without re-setting the min-max values (supposes noone needs the pin for anyting else)
 
     private:
       uint8_t servoIndex;               // index into the channel data for this servo
