@@ -51,6 +51,10 @@ ServoStepper::ServoStepper(uint8_t servoNr, bool invert_dir, int16_t min_endstop
   enabled = 0;
 
   this->invert_dir = invert_dir;
+  // If the dir is inverted, we also need to invert the min/max tests.
+  // The most efficient way to do that is to switch te values and negate the result if inverted
+  // And the most efficient way to negate the result if inverted is to xor the result with invert_dir
+  // (removes a conditional)
   if(! invert_dir) {
     this->min_endstop_pos = min_endstop_pos;
     this->max_endstop_pos = max_endstop_pos;
@@ -99,6 +103,7 @@ void ServoStepper::enable(uint8_t newenabled) {
 
 void ServoStepper::setDir(uint8_t direction) {
   currentDir = direction;
+  // Set to either -1 or 1 (easier to add).
   stepIncrement=(invert_dir ^ currentDir) * 2 - 1;
 }
 
@@ -107,13 +112,8 @@ uint8_t ServoStepper::getDir() {
 }
 
 void ServoStepper::doStep(uint8_t stepByte) {
-
-  if(previousStepWrite != stepByte) {
-    /*if(currentDir) {
-      currentPosition+= stepIncrement;
-    } else {
-      currentPosition-= stepIncrement;
-    }*/
+   // Only step on rising edge
+   if(stepByte && previousStepWrite != stepByte) {
     currentPosition += stepIncrement;
 
     if(! servo[servoIndex].attached()) {

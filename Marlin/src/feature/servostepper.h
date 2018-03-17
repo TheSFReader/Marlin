@@ -63,20 +63,26 @@ class ServoStepper {
     FORCE_INLINE bool read_MIN_Endstop()
     {
         bool result = (currentPosition < min_endstop_pos) ^ invert_dir;
-        /*
-      SERIAL_ECHOPAIR("Check Min", currentPosition);
-      if(invert_dir)
-      SERIAL_ECHO("(inverted");
-      SERIAL_ECHOPAIR("<", min_endstop_pos);
-      SERIAL_ECHOLNPAIR(" -->", result);
-      */
+        #if ENABLED(PINS_DEBUGGING)
+          SERIAL_ECHOPAIR("Check Min", currentPosition);
+          if(invert_dir)
+          SERIAL_ECHO("(inverted");
+          SERIAL_ECHOPAIR("<", min_endstop_pos);
+          SERIAL_ECHOLNPAIR(" -->", result);
+        #endif
       return result;
     }
     FORCE_INLINE bool read_MAX_Endstop()
     {
-      SERIAL_ECHOPAIR("Check Max", currentPosition);
-      SERIAL_ECHOLNPAIR(">", min_endstop_pos);
-      return currentPosition > max_endstop_pos;
+      bool result = (currentPosition > max_endstop_pos) ^ invert_dir;
+      #if ENABLED(PINS_DEBUGGING)
+          SERIAL_ECHOPAIR("Check Max", currentPosition);
+          if(invert_dir)
+          SERIAL_ECHO("(inverted");
+          SERIAL_ECHOPAIR(">", max_endstop_pos);
+          SERIAL_ECHOLNPAIR(" -->", result);
+      #endif
+    return result;
     }
 
   private:

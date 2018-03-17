@@ -96,22 +96,22 @@ Servo::Servo() {
     this->servoIndex = INVALID_SERVO;  // too many servos
 }
 
-int8_t Servo::attach(int pin) {
+int8_t Servo::attach(const int pin) {
   return this->attach(pin, MIN_PULSE_WIDTH, MAX_PULSE_WIDTH);
 }
 
-int8_t Servo::attach(int pin, int min, int max) {
+int8_t Servo::attach(const int pin, const int min, const int max) {
 
   if (this->servoIndex >= MAX_SERVOS) return -1;
 
   if (pin > 0) {
     servo_info[this->servoIndex].Pin.nbr = pin;
-#if ENABLED(PINS_DEBUGGING)
-    SERIAL_ECHOPAIR("Attach and Allocate  Servo #", this->servoIndex);
-    SERIAL_ECHOPAIR("(", servo_info[this->servoIndex].Pin.nbr);
-    SERIAL_CHAR(')');
-    SERIAL_EOL();
-#endif
+    #if ENABLED(PINS_DEBUGGING) 
+      SERIAL_ECHOPAIR("Attach and Allocate  Servo #", this->servoIndex);
+      SERIAL_ECHOPAIR("(", servo_info[this->servoIndex].Pin.nbr);
+      SERIAL_CHAR(')');
+      SERIAL_EOL();
+    #endif
   }
   pinMode(servo_info[this->servoIndex].Pin.nbr, OUTPUT); // set servo pin to output
 
@@ -139,7 +139,7 @@ void Servo::detach() {
 
 int8_t Servo::reattach() {
 
-  if (this->servoIndex >= MAX_SERVOS) return -1;  
+  if (this->servoIndex >= MAX_SERVOS) return -1;
   pinMode(servo_info[this->servoIndex].Pin.nbr, OUTPUT); // set servo pin to output
 
   // initialize the timer if it has not already been initialized
@@ -180,7 +180,7 @@ int Servo::readMicroseconds() {
 
 bool Servo::attached() { return servo_info[this->servoIndex].Pin.isActive; }
 
-void Servo::move(int value) {
+void Servo::move(const int value) {
   constexpr uint16_t servo_delay[] = SERVO_DELAY;
   static_assert(COUNT(servo_delay) == NUM_SERVOS, "SERVO_DELAY must be an array NUM_SERVOS long.");
   if (this->reattach() >= 0) {
@@ -193,4 +193,3 @@ void Servo::move(int value) {
 }
 
 #endif // HAS_SERVOS
-

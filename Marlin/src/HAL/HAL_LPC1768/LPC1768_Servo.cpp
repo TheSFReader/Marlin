@@ -39,7 +39,6 @@
  * attach(pin)           - Attach a servo motor to an i/o pin.
  * attach(pin, min, max) - Attach to a pin, setting min and max values in microseconds
  *                         Default min is 544, max is 2400
- *
  * write()               - Set the servo angle in degrees. (Invalid angles —over MIN_PULSE_WIDTH— are treated as µs.)
  * writeMicroseconds()   - Set the servo pulse width in microseconds.
  * move(pin, angle)      - Sequence of attach(pin), write(angle), delay(SERVO_DELAY).
@@ -164,7 +163,7 @@
   void Servo::move(const int value) {
     constexpr uint16_t servo_delay[] = SERVO_DELAY;
     static_assert(COUNT(servo_delay) == NUM_SERVOS, "SERVO_DELAY must be an array NUM_SERVOS long.");
-    if (this->reattach() >= 0) {    
+    if (this->reattach() >= 0) {
       this->write(value);
       safe_delay(servo_delay[this->servoIndex]);
       #if ENABLED(DEACTIVATE_SERVOS_AFTER_MOVE)
