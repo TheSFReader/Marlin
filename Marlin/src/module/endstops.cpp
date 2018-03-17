@@ -261,7 +261,7 @@ void Endstops::report_state() {
 
 #define STANDARD_READ(AXIS_MINMAX) READ(AXIS_MINMAX ##_PIN)
 #define STANDARD_READ2(AXIS, MIN_MAX) STANDARD_READ(AXIS ##_## MIN_MAX)
-#define SERVO_READ(AXIS, MINMAX)  (stepper##AXIS.read ## MINMAX ##Endstop() )
+#define SERVO_READ(AXIS, MINMAX)  (stepper##AXIS.read_ ## MINMAX ##_Endstop() )
 #ifdef X_IS_SERVO
   #define _READ_X_MIN SERVO_READ(X,MIN)
   #define _READ_X_MAX SERVO_READ(X,MAX)
@@ -635,43 +635,43 @@ void Endstops::update() {
     uint16_t current_endstop_bits_local = 0;
 
     #if HAS_X_MIN
-      if (READ(X_MIN_PIN)) SBI(current_endstop_bits_local, X_MIN);
+      if (_READ2(X,MIN)) SBI(current_endstop_bits_local, X_MIN);
     #endif
     #if HAS_X_MAX
-      if (READ(X_MAX_PIN)) SBI(current_endstop_bits_local, X_MAX);
+      if (_READ2(X,MAX)) SBI(current_endstop_bits_local, X_MAX);
     #endif
     #if HAS_Y_MIN
-      if (READ(Y_MIN_PIN)) SBI(current_endstop_bits_local, Y_MIN);
+      if (_READ2(Y,MIN)) SBI(current_endstop_bits_local, Y_MIN);
     #endif
     #if HAS_Y_MAX
-      if (READ(Y_MAX_PIN)) SBI(current_endstop_bits_local, Y_MAX);
+      if (_READ2(Y,MAX)) SBI(current_endstop_bits_local, Y_MAX);
     #endif
     #if HAS_Z_MIN
-      if (READ(Z_MIN_PIN)) SBI(current_endstop_bits_local, Z_MIN);
+      if (_READ2(Z,MIN)) SBI(current_endstop_bits_local, Z_MIN);
     #endif
     #if HAS_Z_MAX
-      if (READ(Z_MAX_PIN)) SBI(current_endstop_bits_local, Z_MAX);
+      if (_READ2(Z,MAX)) SBI(current_endstop_bits_local, Z_MAX);
     #endif
     #if HAS_Z_MIN_PROBE_PIN
-      if (READ(Z_MIN_PROBE_PIN)) SBI(current_endstop_bits_local, Z_MIN_PROBE);
+      if (_READ2(Z,MIN_PROBE)) SBI(current_endstop_bits_local, Z_MIN_PROBE);
     #endif
     #if HAS_X2_MIN
-      if (READ(X2_MIN_PIN)) SBI(current_endstop_bits_local, X2_MIN);
+      if (_READ2(X2,MIN)) SBI(current_endstop_bits_local, X2_MIN);
     #endif
     #if HAS_X2_MAX
-      if (READ(X2_MAX_PIN)) SBI(current_endstop_bits_local, X2_MAX);
+      if (_READ2(X2,MAX)) SBI(current_endstop_bits_local, X2_MAX);
     #endif
     #if HAS_Y2_MIN
-      if (READ(Y2_MIN_PIN)) SBI(current_endstop_bits_local, Y2_MIN);
+      if (_READ2(Y2,MIN)) SBI(current_endstop_bits_local, Y2_MIN);
     #endif
     #if HAS_Y2_MAX
-      if (READ(Y2_MAX_PIN)) SBI(current_endstop_bits_local, Y2_MAX);
+      if (_READ2(Y2,MAX)) SBI(current_endstop_bits_local, Y2_MAX);
     #endif
     #if HAS_Z2_MIN
-      if (READ(Z2_MIN_PIN)) SBI(current_endstop_bits_local, Z2_MIN);
+      if (_READ2(Z2,MIN)) SBI(current_endstop_bits_local, Z2_MIN);
     #endif
     #if HAS_Z2_MAX
-      if (READ(Z2_MAX_PIN)) SBI(current_endstop_bits_local, Z2_MAX);
+      if (_READ2(Z2,MAX)) SBI(current_endstop_bits_local, Z2_MAX);
     #endif
 
     uint16_t endstop_change = current_endstop_bits_local ^ old_endstop_bits_local;

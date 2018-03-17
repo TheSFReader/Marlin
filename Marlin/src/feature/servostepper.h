@@ -60,7 +60,7 @@ class ServoStepper {
     uint8_t getDir();
     void doStep(uint8_t step);
     uint8_t getStep();
-    FORCE_INLINE bool readMIN_Endstop()
+    FORCE_INLINE bool read_MIN_Endstop()
     {
         bool result = (currentPosition < min_endstop_pos) ^ invert_dir;
         /*
@@ -72,7 +72,7 @@ class ServoStepper {
       */
       return result;
     }
-    FORCE_INLINE bool readMAXEndstop()
+    FORCE_INLINE bool read_MAX_Endstop()
     {
       SERIAL_ECHOPAIR("Check Max", currentPosition);
       SERIAL_ECHOLNPAIR(">", min_endstop_pos);
