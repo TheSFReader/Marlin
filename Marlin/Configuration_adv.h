@@ -364,7 +364,7 @@
 // @section homing
 
 // Homing hits each endstop, retracts by these distances, then does a slower bump.
-#define X_HOME_BUMP_MM 5
+#define X_HOME_BUMP_MM 1
 #define Y_HOME_BUMP_MM 5
 #define Z_HOME_BUMP_MM 2
 #define HOMING_BUMP_DIVISOR { 2, 2, 4 }  // Re-Bump Speed Divisor (Divides the Homing Feedrate)
@@ -1403,7 +1403,7 @@
 /**
  * M43 - display pin status, watch pins for changes, watch endstops & toggle LED, Z servo probe test, toggle pins
  */
-//#define PINS_DEBUGGING
+#define PINS_DEBUGGING
 
 /**
  * Auto-report temperatures with M155 S<seconds>
@@ -1625,26 +1625,32 @@
 
 /**
  *  Servo Stepper
- *  
+ *
  *  Intercepts stepper compmands and redirect them to one or more sevos.
  *  Can be used for example to replace a stepper motor on an axis by a more lightweight servo where applicable
  *  (Laser, vinyl cutter, drawing machine etc.)
- *  When enabling Servo to replace a stepper, you must select which servo will be used for this axis, the servo pin must be accessible/unused 
- *  possible conflict with the FILAMENT_RUNOUT functionality on SERVO_INDEX 3) 
+ *  When enabling Servo to replace a stepper, you must select which servo will be used for this axis, the servo pin must be accessible/unused
+ *  possible conflict with the FILAMENT_RUNOUT functionality on SERVO_INDEX 3)
  *  Other possible conflict is with the probes (which use a servo pin/setup)
  *  For now only X, Y and Z are allowed.
  */
 
-//#define HAVE_SERVOSTEPPER
+#define HAVE_SERVOSTEPPER
 #if ENABLED(HAVE_SERVOSTEPPER)
-  //#define X_IS_SERVO
+  #define X_IS_SERVO
   //#define Y_IS_SERVO
   //#define Z_IS_SERVO
-  
+
   #define SERVO_X_INDEX 0
   #define SERVO_Y_INDEX 1
   #define SERVO_Z_INDEX 2
-  
+
+
+  #define X_MIN_VAL 1100
+  #define X_MAX_VAL 1800
+
+
+
 #endif // HAVE_SERVOSTEPPER
 
 

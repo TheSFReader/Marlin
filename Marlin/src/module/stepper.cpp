@@ -952,6 +952,8 @@ void Stepper::init() {
     L6470_init();
   #endif
 
+
+  
   // Init Dir Pins
   #if HAS_X_DIR
     X_DIR_INIT;
@@ -1035,6 +1037,11 @@ void Stepper::init() {
 
   // Init endstops and pullups
   endstops.init();
+  
+  // Init servo Steppers after endstops to override input to output
+  #if ENABLED(HAVE_SERVOSTEPPER)
+    servostepper_init();
+  #endif
 
   #define _STEP_INIT(AXIS) AXIS ##_STEP_INIT
   #define _WRITE_STEP(AXIS, HIGHLOW) AXIS ##_STEP_WRITE(HIGHLOW)

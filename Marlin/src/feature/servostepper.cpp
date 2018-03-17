@@ -21,7 +21,7 @@
  */
 
 /**
- * servo stepper : allow the use of a servo in place of a stepper. 
+ * servo stepper : allow the use of a servo in place of a stepper.
  *
  */
 
@@ -41,15 +41,43 @@
 
 extern Servo servo[NUM_SERVOS];
 
+
+
+ServoStepper::ServoStepper(uint8_t servoNr, bool invert_dir, int16_t min_endstop_pos, int16_t max_endstop_pos) {
+  servoIndex = servoNr;
+  currentPosition = 1500;
+  currentDir = 0;
+  previousStepWrite = 0;
+  enabled = 0;
+
+  this->invert_dir = invert_dir;
+  if(! invert_dir) {
+    this->min_endstop_pos = min_endstop_pos;
+    this->max_endstop_pos = max_endstop_pos;
+  } else {
+    this->min_endstop_pos = max_endstop_pos;
+    this->max_endstop_pos = min_endstop_pos;
+  }
+
+  stepIncrement = invert_dir ? -1 : 1;
+}
+
 ServoStepper::ServoStepper(uint8_t servoNr) {
   servoIndex = servoNr;
   currentPosition = 1500;
-  currentDir = 0; 
+  currentDir = 0;
   previousStepWrite = 0;
   enabled = 0;
+  invert_dir = true;
+  min_endstop_pos = 1100;
+  max_endstop_pos = 1900;
+
+  stepIncrement = invert_dir ? -1 : 1;
 }
 
+void ServoStepper::init() {
 
+}
 
 void ServoStepper::enable(uint8_t newenabled) {
   if(newenabled) {
@@ -62,15 +90,16 @@ void ServoStepper::enable(uint8_t newenabled) {
     }
   }
   enabled = newenabled;
-  
+
 }
 
  uint8_t ServoStepper::isEnabled() {
   return servo[servoIndex].attached();
  }
- 
+
 void ServoStepper::setDir(uint8_t direction) {
   currentDir = direction;
+  stepIncrement=(invert_dir ^ currentDir) * 2 - 1;
 }
 
 uint8_t ServoStepper::getDir() {
@@ -78,13 +107,15 @@ uint8_t ServoStepper::getDir() {
 }
 
 void ServoStepper::doStep(uint8_t stepByte) {
-  
+
   if(previousStepWrite != stepByte) {
-    if(currentDir) {
-      currentPosition++;
+    /*if(currentDir) {
+      currentPosition+= stepIncrement;
     } else {
-      currentPosition--;
-    }
+      currentPosition-= stepIncrement;
+    }*/
+    currentPosition += stepIncrement;
+
     if(! servo[servoIndex].attached()) {
      servo[servoIndex].reattach();
     }
@@ -97,4 +128,3 @@ void ServoStepper::doStep(uint8_t stepByte) {
 
 
 #endif // HAVE_SERVOSTEPPER
-

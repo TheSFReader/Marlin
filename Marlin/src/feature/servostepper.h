@@ -42,32 +42,58 @@
 */
 
 /**
- * servo stepper : allow the use of a servo in place of a stepper. 
+ * servo stepper : allow the use of a servo in place of a stepper.
  *
  */
- 
+
 #ifndef SERVOSTEPPER_H
 #define SERVOSTEPPER_H
 
 class ServoStepper {
   public:
     ServoStepper(uint8_t servoIndex);
+    ServoStepper(uint8_t servoIndex, bool invert_dir, int16_t min_endstop_pos, int16_t max_endstop_pos);
+    void init();
     void enable(uint8_t enabled);
     uint8_t isEnabled();
     void setDir(uint8_t direction);
     uint8_t getDir();
     void doStep(uint8_t step);
     uint8_t getStep();
-    
-    
+    FORCE_INLINE bool readMIN_Endstop()
+    {
+        bool result = (currentPosition < min_endstop_pos) ^ invert_dir;
+        /*
+      SERIAL_ECHOPAIR("Check Min", currentPosition);
+      if(invert_dir)
+      SERIAL_ECHO("(inverted");
+      SERIAL_ECHOPAIR("<", min_endstop_pos);
+      SERIAL_ECHOLNPAIR(" -->", result);
+      */
+      return result;
+    }
+    FORCE_INLINE bool readMAXEndstop()
+    {
+      SERIAL_ECHOPAIR("Check Max", currentPosition);
+      SERIAL_ECHOLNPAIR(">", min_endstop_pos);
+      return currentPosition > max_endstop_pos;
+    }
+
   private:
     uint8_t enabled;
     uint8_t servoIndex;               // index into the channel data for this servo
-    uint16_t currentPosition;
-    uint16_t lastPositionSent;
+    int16_t currentPosition;
+    int16_t lastPositionSent;
     uint8_t currentDir;
+    bool invert_dir;
     uint8_t previousStepWrite;
-    
+    int16_t min_endstop_pos;
+    int16_t max_endstop_pos;
+    char stepIncrement;
+
+
 };
+
+extern void servostepper_init();
 
 #endif // SERVOSTEPPER_H

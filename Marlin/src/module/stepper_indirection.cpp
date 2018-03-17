@@ -580,8 +580,12 @@
 
 #if ENABLED(HAVE_SERVOSTEPPER)
 
-  #define _SERVOSTEPPER_DEFINE(ST) ServoStepper stepper##ST(SERVO_##ST##_INDEX)
-  
+  #define _SERVOSTEPPER_DEFINE(ST) ServoStepper stepper##ST(SERVO_##ST##_INDEX, true, (ST##_MIN_VAL), (ST##_MAX_VAL))
+
+   #define _SERVO_INIT(A) do{ \
+    stepper##A.init(); \
+   }while(0)
+
   #if ENABLED(X_IS_SERVO)
     _SERVOSTEPPER_DEFINE(X);
   #endif
@@ -591,5 +595,18 @@
   #if ENABLED(Z_IS_SERVO)
     _SERVOSTEPPER_DEFINE(Z);
   #endif
+
+  void servostepper_init() {
+    #if ENABLED(X_IS_SERVO)
+      _SERVO_INIT(X);
+    #endif
+    #if ENABLED(Y_IS_SERVO)
+      _SERVO_INIT(Y);
+    #endif
+    #if ENABLED(Z_IS_SERVO)
+      _SERVO_INIT(Z);
+    #endif
+
+  }
 
 #endif// HAVE_SERVOSTEPPER

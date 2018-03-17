@@ -76,8 +76,10 @@
 #endif
 
 
+
 #if ENABLED(HAVE_SERVOSTEPPER)
-#include "../feature/servostepper.h"
+  #include "../feature/servostepper.h"
+  void servostepper_init();
 #endif
 
 // X Stepper

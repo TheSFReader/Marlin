@@ -31,7 +31,16 @@
  * M280: Get or set servo position. P<index> [S<angle>]
  */
 void GcodeSuite::M280() {
-  if (!parser.seen('P')) return;
+  if (!parser.seen('P')) {
+    for(int i = 0; i < NUM_SERVOS; i++) {
+      SERIAL_ECHO_START();
+      SERIAL_ECHOPAIR(" Servo ", i);
+      SERIAL_ECHOPAIR(": ", servo[i].read());
+      SERIAL_ECHOPAIR("( ", servo[i].readMicroseconds());
+      SERIAL_ECHOLN(")");
+    }
+    return;
+  }
   const int servo_index = parser.value_int();
   if (WITHIN(servo_index, 0, NUM_SERVOS - 1)) {
     if (parser.seen('S'))
@@ -39,7 +48,9 @@ void GcodeSuite::M280() {
     else {
       SERIAL_ECHO_START();
       SERIAL_ECHOPAIR(" Servo ", servo_index);
-      SERIAL_ECHOLNPAIR(": ", servo[servo_index].read());
+      SERIAL_ECHOPAIR(": ", servo[servo_index].read());
+      SERIAL_ECHOPAIR("( ", servo[servo_index].readMicroseconds());
+      SERIAL_ECHOLN(")");
     }
   }
   else {
