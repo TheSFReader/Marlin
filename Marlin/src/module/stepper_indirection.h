@@ -519,28 +519,77 @@
 
 
 
-#if ENABLED(HAVE_SERVOSTEPPER) && ENABLED(X_IS_SERVO)
-  #undef X_ENABLE_INIT
-  #undef X_ENABLE_WRITE
-  #undef X_ENABLE_READ
-  #undef X_DIR_INIT
-  #undef X_DIR_WRITE
-  #undef X_DIR_READ
-  #undef X_STEP_INIT
-  #undef X_STEP_WRITE
-  #undef X_STEP_READ
+#if ENABLED(HAVE_SERVOSTEPPER)
+  #if ENABLED(X_IS_SERVO)
+    #undef X_ENABLE_INIT
+    #undef X_ENABLE_WRITE
+    #undef X_ENABLE_READ
+    #undef X_DIR_INIT
+    #undef X_DIR_WRITE
+    #undef X_DIR_READ
+    #undef X_STEP_INIT
+    #undef X_STEP_WRITE
+    #undef X_STEP_READ
 
-  extern ServoStepper stepperX;
-  #define X_ENABLE_INIT NOOP
-  #define X_ENABLE_WRITE(STATE) (stepperX.enable(STATE))
-  #define X_ENABLE_READ (stepperX.isEnabled())
-  #define X_DIR_INIT NOOP
-  #define X_DIR_WRITE(STATE) (stepperX.setDir(STATE))
-  #define X_DIR_READ (stepperX.getDir())
-  #define X_STEP_INIT NOOP
-  #define X_STEP_WRITE(STATE) (stepperX.doStep(STATE))
-  #define X_STEP_READ (stepperX.getStep())
-#endif
+    extern ServoStepper stepperX;
+    #define X_ENABLE_INIT NOOP
+    #define X_ENABLE_WRITE(STATE) (stepperX.enable(STATE))
+    #define X_ENABLE_READ (stepperX.isEnabled())
+    #define X_DIR_INIT NOOP
+    #define X_DIR_WRITE(STATE) (stepperX.setDir(STATE))
+    #define X_DIR_READ (stepperX.getDir())
+    #define X_STEP_INIT NOOP
+    #define X_STEP_WRITE(STATE) (stepperX.doStep(STATE))
+    #define X_STEP_READ (stepperX.getStep())
+  #endif
+
+  #if ENABLED(Y_IS_SERVO)
+    #undef Y_ENABLE_INIT
+    #undef Y_ENABLE_WRITE
+    #undef Y_ENABLE_READ
+    #undef Y_DIR_INIT
+    #undef Y_DIR_WRITE
+    #undef Y_DIR_READ
+    #undef Y_STEP_INIT
+    #undef Y_STEP_WRITE
+    #undef Y_STEP_READ
+
+    extern ServoStepper stepperY;
+    #define Y_ENABLE_INIT NOOP
+    #define Y_ENABLE_WRITE(STATE) (stepperY.enable(STATE))
+    #define Y_ENABLE_READ (stepperY.isEnabled())
+    #define Y_DIR_INIT NOOP
+    #define Y_DIR_WRITE(STATE) (stepperY.setDir(STATE))
+    #define Y_DIR_READ (stepperY.getDir())
+    #define Y_STEP_INIT NOOP
+    #define Y_STEP_WRITE(STATE) (stepperY.doStep(STATE))
+    #define Y_STEP_READ (stepperY.getStep())
+  #endif
+
+  #if ENABLED(Z_IS_SERVO)
+    #undef Z_ENABLE_INIT
+    #undef Z_ENABLE_WRITE
+    #undef Z_ENABLE_READ
+    #undef Z_DIR_INIT
+    #undef Z_DIR_WRITE
+    #undef Z_DIR_READ
+    #undef Z_STEP_INIT
+    #undef Z_STEP_WRITE
+    #undef Z_STEP_READ
+
+    extern ServoStepper stepperZ;
+    #define Z_ENABLE_INIT NOOP
+    #define Z_ENABLE_WRITE(STATE) (stepperZ.enable(STATE))
+    #define Z_ENABLE_READ (stepperZ.isEnabled())
+    #define Z_DIR_INIT NOOP
+    #define Z_DIR_WRITE(STATE) (stepperZ.setDir(STATE))
+    #define Z_DIR_READ (stepperZ.getDir())
+    #define Z_STEP_INIT NOOP
+    #define Z_STEP_WRITE(STATE) (stepperZ.doStep(STATE))
+    #define Z_STEP_READ (stepperZ.getStep())
+  #endif
+
+#endif // HAVE_SERVOSTEPPER
 
 
 #endif // STEPPER_INDIRECTION_H
