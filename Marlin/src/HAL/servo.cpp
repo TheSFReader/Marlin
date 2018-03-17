@@ -54,8 +54,6 @@
 
 #include "../inc/MarlinConfig.h"
 
-#include "HAL.h"
-
 #if ENABLED(PINS_DEBUGGING)
 #include "../core/serial.h"
 #endif
@@ -63,13 +61,11 @@
 #if HAS_SERVOS && !(IS_32BIT_TEENSY || defined(TARGET_LPC1768))
 
 //#include <Arduino.h>
-
 #include "servo.h"
 #include "servo_private.h"
 
 ServoInfo_t servo_info[MAX_SERVOS];                  // static array of servo info structures
 uint8_t ServoCount = 0;                              // the total number of attached servos
-
 
 #define SERVO_MIN() (MIN_PULSE_WIDTH - this->min * 4)  // minimum value in uS for this servo
 #define SERVO_MAX() (MAX_PULSE_WIDTH - this->max * 4)  // maximum value in uS for this servo
@@ -106,7 +102,7 @@ int8_t Servo::attach(const int pin, const int min, const int max) {
 
   if (pin > 0) {
     servo_info[this->servoIndex].Pin.nbr = pin;
-    #if ENABLED(PINS_DEBUGGING) 
+    #if ENABLED(PINS_DEBUGGING)
       SERIAL_ECHOPAIR("Attach and Allocate  Servo #", this->servoIndex);
       SERIAL_ECHOPAIR("(", servo_info[this->servoIndex].Pin.nbr);
       SERIAL_CHAR(')');

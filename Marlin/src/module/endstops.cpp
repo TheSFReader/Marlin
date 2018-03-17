@@ -32,11 +32,6 @@
 #include "../module/temperature.h"
 #include "../lcd/ultralcd.h"
 
-#if ENABLED(HAVE_SERVOSTEPPER)
-#include "../feature/servostepper.h"
-#include "../module/stepper_indirection.h"
-#endif
-
 // TEST_ENDSTOP: test the old and the current status of an endstop
 #define TEST_ENDSTOP(ENDSTOP) (TEST(current_endstop_bits & old_endstop_bits, ENDSTOP))
 
@@ -47,31 +42,27 @@ Endstops endstops;
 bool Endstops::enabled, Endstops::enabled_globally; // Initialized by settings.load()
 volatile char Endstops::endstop_hit_bits; // use X_MIN, Y_MIN, Z_MIN and Z_MIN_PROBE as BIT value
 
-Endstops::esbits_t
-    Endstops::current_endstop_bits = 0,
-    Endstops::old_endstop_bits = 0;
+Endstops::esbits_t Endstops::current_endstop_bits = 0,
+                   Endstops::old_endstop_bits = 0;
 
 #if HAS_BED_PROBE
   volatile bool Endstops::z_probe_enabled = false;
 #endif
 
+// Initialized by settings.load()
 #if ENABLED(X_DUAL_ENDSTOPS)
-  float Endstops::x_endstop_adj; // Initialized by settings.load()
+  float Endstops::x_endstop_adj;
 #endif
 #if ENABLED(Y_DUAL_ENDSTOPS)
-  float Endstops::y_endstop_adj; // Initialized by settings.load()
+  float Endstops::y_endstop_adj;
 #endif
 #if ENABLED(Z_DUAL_ENDSTOPS)
-  float Endstops::z_endstop_adj; // Initialized by settings.load()
+  float Endstops::z_endstop_adj;
 #endif
 
 /**
  * Class and Instance Methods
  */
-
-
-
-
 
 void Endstops::init() {
 
@@ -257,80 +248,44 @@ void Endstops::report_state() {
   }
 } // Endstops::report_state
 
-
-
-#define STANDARD_READ(AXIS_MINMAX) READ(AXIS_MINMAX ##_PIN)
-#define STANDARD_READ2(AXIS, MIN_MAX) STANDARD_READ(AXIS ##_## MIN_MAX)
-#define SERVO_READ(AXIS, MINMAX)  (stepper##AXIS.read_ ## MINMAX ##_Endstop() )
-#ifdef X_IS_SERVO
-  #define _READ_X_MIN SERVO_READ(X,MIN)
-  #define _READ_X_MAX SERVO_READ(X,MAX)
-#else
-  #define _READ_X_MIN STANDARD_READ2(X,MIN)
-  #define _READ_X_MAX STANDARD_READ2(X,MAX)
-#endif
-
-#ifdef Y_IS_SERVO
-  #define _READ_Y_MIN SERVO_READ(Y,MIN)
-  #define _READ_Y_MAX SERVO_READ(Y,MAX)
-#else
-  #define _READ_Y_MIN STANDARD_READ2(Y,MIN)
-  #define _READ_Y_MAX STANDARD_READ2(Y,MAX)
-#endif
-#ifdef Z_IS_SERVO
-  #define _READ_Z_MIN SERVO_READ(Z,MIN)
-  #define _READ_Z_MAX SERVO_READ(Z,MAX)
-#else
-  #define _READ_Z_MIN STANDARD_READ2(Z,MIN)
-  #define _READ_Z_MAX STANDARD_READ2(Z,MAX)
-#endif
-#define _READ2(AXIS,MIN_MAX) _READ_## AXIS ##_## MIN_MAX
-
-
 void Endstops::M119() {
   SERIAL_PROTOCOLLNPGM(MSG_M119_REPORT);
   #define ES_REPORT(AXIS) do{ \
     SERIAL_PROTOCOLPGM(MSG_##AXIS); \
-    SERIAL_PROTOCOLLN(((STANDARD_READ(AXIS)^AXIS##_ENDSTOP_INVERTING) ? MSG_ENDSTOP_HIT : MSG_ENDSTOP_OPEN)); \
+    SERIAL_PROTOCOLLN(((READ(AXIS##_PIN)^AXIS##_ENDSTOP_INVERTING) ? MSG_ENDSTOP_HIT : MSG_ENDSTOP_OPEN)); \
   }while(0)
-  #define ES_REPORT2(AXIS, MINMAX) do{ \
-    SERIAL_PROTOCOLPGM(MSG_##AXIS ##_## MINMAX); \
-    SERIAL_PROTOCOLLN(((_READ2(AXIS, MINMAX)^AXIS ##_## MINMAX ##_ENDSTOP_INVERTING) ? MSG_ENDSTOP_HIT : MSG_ENDSTOP_OPEN)); \
-  }while(0)
-
-      /*SERIAL_PROTOCOLLN(((STANDARD_READ2(AXIS, MINMAX)^AXIS ##_## MINMAX ##_ENDSTOP_INVERTING) ? MSG_ENDSTOP_HIT : MSG_ENDSTOP_OPEN)); */
   #if HAS_X_MIN
-    ES_REPORT2(X, MIN);
+    ES_REPORT(X_MIN);
   #endif
   #if HAS_X2_MIN
     ES_REPORT(X2_MIN);
   #endif
   #if HAS_X_MAX
-    ES_REPORT2(X,MAX);
+    ES_REPORT(X_MAX);
   #endif
   #if HAS_X2_MAX
     ES_REPORT(X2_MAX);
   #endif
   #if HAS_Y_MIN
-    ES_REPORT2(Y,MIN);
+    ES_REPORT(Y_MIN);
   #endif
   #if HAS_Y2_MIN
     ES_REPORT(Y2_MIN);
   #endif
   #if HAS_Y_MAX
-    ES_REPORT2(Y,MAX);
+    ES_REPORT(Y_MAX);
   #endif
   #if HAS_Y2_MAX
     ES_REPORT(Y2_MAX);
   #endif
   #if HAS_Z_MIN
-    ES_REPORT2(Z,MIN);
+    ES_REPORT(Z_MIN);
   #endif
   #if HAS_Z2_MIN
     ES_REPORT(Z2_MIN);
   #endif
   #if HAS_Z_MAX
-    ES_REPORT2(Z,MAX);
+    ES_REPORT(Z_MAX);
   #endif
   #if HAS_Z2_MAX
     ES_REPORT(Z2_MAX);
@@ -386,18 +341,17 @@ void Endstops::update() {
 
   #define SET_BIT(N,B,TF) do{ if (TF) SBI(N,B); else CBI(N,B); }while(0)
   // UPDATE_ENDSTOP_BIT: set the current endstop bits for an endstop to its status
-  //#define UPDATE_ENDSTOP_BIT(AXIS, MINMAX) SET_BIT(current_endstop_bits, _ENDSTOP(AXIS, MINMAX), (READ(_ENDSTOP_PIN(AXIS, MINMAX)) != _ENDSTOP_INVERTING(AXIS, MINMAX)))
-  #define UPDATE_ENDSTOP_BIT(AXIS, MINMAX) SET_BIT(current_endstop_bits, _ENDSTOP(AXIS, MINMAX), (_READ2(AXIS, MINMAX) != _ENDSTOP_INVERTING(AXIS, MINMAX)))
+  #define UPDATE_ENDSTOP_BIT(AXIS, MINMAX) SET_BIT(current_endstop_bits, _ENDSTOP(AXIS, MINMAX), (READ(_ENDSTOP_PIN(AXIS, MINMAX)) != _ENDSTOP_INVERTING(AXIS, MINMAX)))
   // COPY_BIT: copy the value of SRC_BIT to DST_BIT in DST
   #define COPY_BIT(DST, SRC_BIT, DST_BIT) SET_BIT(DST, DST_BIT, TEST(DST, SRC_BIT))
 
   #define UPDATE_ENDSTOP(AXIS,MINMAX) do { \
       UPDATE_ENDSTOP_BIT(AXIS, MINMAX); \
-      if (TEST_ENDSTOP(_ENDSTOP(AXIS, MINMAX)) && stepper.current_block->steps[_AXIS(AXIS)] > 0) { \
+      if (TEST_ENDSTOP(_ENDSTOP(AXIS, MINMAX))) { \
         _ENDSTOP_HIT(AXIS, MINMAX); \
         stepper.endstop_triggered(_AXIS(AXIS)); \
       } \
-    } while(0)
+    }while(0)
 
   #if ENABLED(G38_PROBE_TARGET) && PIN_EXISTS(Z_MIN_PROBE) && !(CORE_IS_XY || CORE_IS_XZ)
     // If G38 command is active check Z_MIN_PROBE for ALL movement
@@ -494,7 +448,6 @@ void Endstops::update() {
   /**
    * Check and update endstops according to conditions
    */
-
   if (X_MOVE_TEST) {
     if (stepper.motor_direction(X_AXIS_HEAD)) { // -direction
       #if HAS_X_MIN
@@ -524,7 +477,6 @@ void Endstops::update() {
         #else
           if (X_MAX_TEST) UPDATE_ENDSTOP(X, MAX);
         #endif
-
       #endif
     }
   }
@@ -635,43 +587,43 @@ void Endstops::update() {
     uint16_t current_endstop_bits_local = 0;
 
     #if HAS_X_MIN
-      if (_READ2(X,MIN)) SBI(current_endstop_bits_local, X_MIN);
+      if (READ(X_MIN_PIN)) SBI(current_endstop_bits_local, X_MIN);
     #endif
     #if HAS_X_MAX
-      if (_READ2(X,MAX)) SBI(current_endstop_bits_local, X_MAX);
+      if (READ(X_MAX_PIN)) SBI(current_endstop_bits_local, X_MAX);
     #endif
     #if HAS_Y_MIN
-      if (_READ2(Y,MIN)) SBI(current_endstop_bits_local, Y_MIN);
+      if (READ(Y_MIN_PIN)) SBI(current_endstop_bits_local, Y_MIN);
     #endif
     #if HAS_Y_MAX
-      if (_READ2(Y,MAX)) SBI(current_endstop_bits_local, Y_MAX);
+      if (READ(Y_MAX_PIN)) SBI(current_endstop_bits_local, Y_MAX);
     #endif
     #if HAS_Z_MIN
-      if (_READ2(Z,MIN)) SBI(current_endstop_bits_local, Z_MIN);
+      if (READ(Z_MIN_PIN)) SBI(current_endstop_bits_local, Z_MIN);
     #endif
     #if HAS_Z_MAX
-      if (_READ2(Z,MAX)) SBI(current_endstop_bits_local, Z_MAX);
+      if (READ(Z_MAX_PIN)) SBI(current_endstop_bits_local, Z_MAX);
     #endif
     #if HAS_Z_MIN_PROBE_PIN
-      if (_READ2(Z,MIN_PROBE)) SBI(current_endstop_bits_local, Z_MIN_PROBE);
+      if (READ(Z_MIN_PROBE_PIN)) SBI(current_endstop_bits_local, Z_MIN_PROBE);
     #endif
     #if HAS_X2_MIN
-      if (_READ2(X2,MIN)) SBI(current_endstop_bits_local, X2_MIN);
+      if (READ(X2_MIN_PIN)) SBI(current_endstop_bits_local, X2_MIN);
     #endif
     #if HAS_X2_MAX
-      if (_READ2(X2,MAX)) SBI(current_endstop_bits_local, X2_MAX);
+      if (READ(X2_MAX_PIN)) SBI(current_endstop_bits_local, X2_MAX);
     #endif
     #if HAS_Y2_MIN
-      if (_READ2(Y2,MIN)) SBI(current_endstop_bits_local, Y2_MIN);
+      if (READ(Y2_MIN_PIN)) SBI(current_endstop_bits_local, Y2_MIN);
     #endif
     #if HAS_Y2_MAX
-      if (_READ2(Y2,MAX)) SBI(current_endstop_bits_local, Y2_MAX);
+      if (READ(Y2_MAX_PIN)) SBI(current_endstop_bits_local, Y2_MAX);
     #endif
     #if HAS_Z2_MIN
-      if (_READ2(Z2,MIN)) SBI(current_endstop_bits_local, Z2_MIN);
+      if (READ(Z2_MIN_PIN)) SBI(current_endstop_bits_local, Z2_MIN);
     #endif
     #if HAS_Z2_MAX
-      if (_READ2(Z2,MAX)) SBI(current_endstop_bits_local, Z2_MAX);
+      if (READ(Z2_MAX_PIN)) SBI(current_endstop_bits_local, Z2_MAX);
     #endif
 
     uint16_t endstop_change = current_endstop_bits_local ^ old_endstop_bits_local;
