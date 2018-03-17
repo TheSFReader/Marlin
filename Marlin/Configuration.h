@@ -1832,6 +1832,7 @@
  */
 #define NUM_SERVOS 4 // Servo index starts with 0 for M280 command
 
+
 // Delay (in milliseconds) before the next move will start, to give the servo time to reach its target angle.
 // 300ms is a good value but you can try less delay.
 // If the servo can't reach the requested position, increase it.
@@ -1841,5 +1842,10 @@
 //
 // With this option servos are powered only during movement, then turned off to prevent jitter.
 //#define DEACTIVATE_SERVOS_AFTER_MOVE
+
+// Set the limits to the servo pulses length.
+// If undefined (or only one for a given servo), will use the default ones. 
+//#define SERVO0_MIN_MS 750
+//#define SERVO0_MAX_MS 2250
 
 #endif // CONFIGURATION_H
