@@ -54,8 +54,10 @@ class ServoStepper {
     ServoStepper(uint8_t servoIndex);
     ServoStepper(uint8_t servoIndex, bool invert_dir, int16_t min_endstop_pos, int16_t max_endstop_pos);
     void init();
+
+// The signal is inverted, when caled with thue it should be disabled
     void enable(uint8_t enabled);
-    uint8_t isEnabled();
+    uint8_t isEnabledPin();
     void setDir(uint8_t direction);
     uint8_t getDir();
     void doStep(uint8_t step);
@@ -63,7 +65,7 @@ class ServoStepper {
     FORCE_INLINE bool read_MIN_Endstop()
     {
         bool result = (currentPosition < min_endstop_pos) ^ invert_dir;
-        #if ENABLED(PINS_DEBUGGING)
+        #if false & ENABLED(PINS_DEBUGGING)
           SERIAL_ECHOPAIR("Check Min", currentPosition);
           if(invert_dir)
           SERIAL_ECHO("(inverted");
@@ -75,7 +77,7 @@ class ServoStepper {
     FORCE_INLINE bool read_MAX_Endstop()
     {
       bool result = (currentPosition > max_endstop_pos) ^ invert_dir;
-      #if ENABLED(PINS_DEBUGGING)
+      #if false && ENABLED(PINS_DEBUGGING)
           SERIAL_ECHOPAIR("Check Max", currentPosition);
           if(invert_dir)
           SERIAL_ECHO("(inverted");
@@ -86,7 +88,7 @@ class ServoStepper {
     }
 
   private:
-    uint8_t enabled;
+    uint8_t disabled;
     uint8_t servoIndex;               // index into the channel data for this servo
     int16_t currentPosition;
     int16_t lastPositionSent;
@@ -96,8 +98,6 @@ class ServoStepper {
     int16_t min_endstop_pos;
     int16_t max_endstop_pos;
     char stepIncrement;
-
-
 };
 
 extern void servostepper_init();

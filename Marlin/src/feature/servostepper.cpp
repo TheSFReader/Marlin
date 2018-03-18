@@ -48,7 +48,7 @@ ServoStepper::ServoStepper(uint8_t servoNr, bool invert_dir, int16_t min_endstop
   currentPosition = 1500;
   currentDir = 0;
   previousStepWrite = 0;
-  enabled = 0;
+  disabled = 1;
 
   this->invert_dir = invert_dir;
   // If the dir is inverted, we also need to invert the min/max tests.
@@ -71,7 +71,7 @@ ServoStepper::ServoStepper(uint8_t servoNr) {
   currentPosition = 1500;
   currentDir = 0;
   previousStepWrite = 0;
-  enabled = 0;
+  disabled = 1;
   invert_dir = true;
   min_endstop_pos = 1100;
   max_endstop_pos = 1900;
@@ -83,22 +83,25 @@ void ServoStepper::init() {
 
 }
 
-void ServoStepper::enable(uint8_t newenabled) {
-  if(newenabled) {
-    if(! enabled) {
-      servo[servoIndex].reattach();
-    }
-  } else {
-    if(enabled) {
+void ServoStepper::enable(uint8_t newdisabled) {
+  // The signal is inverted, when called with true, the stepper should be disabled
+  if(newdisabled) {
+    if(! disabled) {
+SERIAL_ECHOLNPAIR("Disabling ",servoIndex);
       servo[servoIndex].detach();
     }
+  } else {
+    if(disabled) {
+SERIAL_ECHOLNPAIR("Enabling ", servoIndex);
+      servo[servoIndex].reattach();
+    }
   }
-  enabled = newenabled;
+  disabled = newdisabled;
 
 }
 
- uint8_t ServoStepper::isEnabled() {
-  return servo[servoIndex].attached();
+ uint8_t ServoStepper::isEnabledPin() {
+  return disabled;
  }
 
 void ServoStepper::setDir(uint8_t direction) {
@@ -113,7 +116,7 @@ uint8_t ServoStepper::getDir() {
 
 void ServoStepper::doStep(uint8_t stepByte) {
    // Only step on rising edge
-   if(stepByte && previousStepWrite != stepByte) {
+  if(! disabled && stepByte && previousStepWrite != stepByte) {
     currentPosition += stepIncrement;
 
     if(! servo[servoIndex].attached()) {

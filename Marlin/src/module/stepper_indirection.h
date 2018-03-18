@@ -534,7 +534,7 @@
     extern ServoStepper stepperX;
     #define X_ENABLE_INIT NOOP
     #define X_ENABLE_WRITE(STATE) (stepperX.enable(STATE))
-    #define X_ENABLE_READ (stepperX.isEnabled())
+    #define X_ENABLE_READ (stepperX.isEnabledPin())
     #define X_DIR_INIT NOOP
     #define X_DIR_WRITE(STATE) (stepperX.setDir(STATE))
     #define X_DIR_READ (stepperX.getDir())
@@ -557,7 +557,7 @@
     extern ServoStepper stepperY;
     #define Y_ENABLE_INIT NOOP
     #define Y_ENABLE_WRITE(STATE) (stepperY.enable(STATE))
-    #define Y_ENABLE_READ (stepperY.isEnabled())
+    #define Y_ENABLE_READ (stepperY.isEnabledPin())
     #define Y_DIR_INIT NOOP
     #define Y_DIR_WRITE(STATE) (stepperY.setDir(STATE))
     #define Y_DIR_READ (stepperY.getDir())
@@ -580,7 +580,7 @@
     extern ServoStepper stepperZ;
     #define Z_ENABLE_INIT NOOP
     #define Z_ENABLE_WRITE(STATE) (stepperZ.enable(STATE))
-    #define Z_ENABLE_READ (stepperZ.isEnabled())
+    #define Z_ENABLE_READ (stepperZ.isEnabledPin())
     #define Z_DIR_INIT NOOP
     #define Z_DIR_WRITE(STATE) (stepperZ.setDir(STATE))
     #define Z_DIR_READ (stepperZ.getDir())
