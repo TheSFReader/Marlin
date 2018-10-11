@@ -80,6 +80,12 @@
   void L6470_init_to_defaults();
 #endif
 
+
+#if ENABLED(USE_BYJSTEPPER)
+  #include "../feature/byjstepper.h"
+#endif
+
+
 void restore_stepper_drivers();  // Called by PSU_ON
 void reset_stepper_drivers();    // Called by settings.load / settings.reset
 
@@ -614,6 +620,31 @@ void reset_stepper_drivers();    // Called by settings.load / settings.reset
   #define E_STEP_WRITE(E,V) E0_STEP_WRITE(V)
   #define   NORM_E_DIR(E)   E0_DIR_WRITE(!INVERT_E0_DIR)
   #define    REV_E_DIR(E)   E0_DIR_WRITE( INVERT_E0_DIR)
+#endif
+
+
+// Y2 Stepper
+#if ENABLED(USE_BYJSTEPPER)
+  #if true // AXIS_DRIVER_TYPE(Z, BYJ)
+    extern ByjStepper stepperZ;
+    //#undef Z_ENABLE INIT
+    #undef Z_ENABLE_WRITE
+    #undef Z_ENABLE_READ
+    //#undef Z_DIR_INIT
+    #undef Z_DIR_WRITE
+    #undef Z_DIR_READ
+    //#undef Z_STEP_INIT
+    #undef Z_STEP_WRITE
+    #undef Z_STEP_READ
+    
+    #define Z_ENABLE_WRITE(STATE) stepperZ.enable(STATE)
+    #define Z_ENABLE_READ (stepperZ.isEnabled())
+    #define Z_DIR_WRITE(STATE) stepperZ.setDir(STATE)
+    #define Z_DIR_READ (stepperZ.getDir())
+    #define Z_STEP_WRITE(STATE) stepperZ.doStep(STATE)
+    #define Z_STEP_READ (stepperZ.getStep())
+    
+    #endif
 #endif
 
 #endif // STEPPER_INDIRECTION_H

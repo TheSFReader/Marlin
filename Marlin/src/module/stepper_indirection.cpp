@@ -784,3 +784,8 @@ void reset_stepper_drivers() {
   }
 
 #endif // L6470
+
+
+#if ENABLED(USE_BYJSTEPPER)
+ByjStepper stepperZ(SERVO0_PIN, SERVO1_PIN, SERVO2_PIN, SERVO3_PIN);
+#endif
