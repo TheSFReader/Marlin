@@ -30,9 +30,9 @@
 class ByjStepper {
   public:
   
-    ByjStepper(const uint8_t p1, const uint8_t p2, const uint8_t p3, const uint8_t p4);
+    ByjStepper(void (*stepfunction)(const uint8_t new_step));
     
-    init();
+    init(const uint8_t pin0, const uint8_t pin1,const uint8_t pin2,const uint8_t pin3);
     
     void enable(const uint8_t new_enabled);
     uint8_t isEnabled();
@@ -44,7 +44,8 @@ class ByjStepper {
 
   private:
     uint8_t enabled;
-    uint8_t pins[4];               // index into the channel data for this servo
+
+    void (*internalstep)(const uint8_t command);
     uint8_t currentHalfStep;
     uint8_t currentDir;
     uint8_t halfStepIncrement;

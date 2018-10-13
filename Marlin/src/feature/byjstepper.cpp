@@ -32,36 +32,29 @@
 
 const uint8_t halfSteps[8]={1, 3, 2, 6, 4, 12, 8, 9 };
 
-ByjStepper::ByjStepper(const uint8_t p1, const uint8_t p2, const uint8_t p3, const uint8_t p4) {
+ByjStepper::ByjStepper(void (*stepfunction)(const uint8_t new_step)) {
   
-    pins[0] = p1;
-    pins[1] = p2;
-    pins[2] = p3;
-    pins[3] = p4;
+  internalstep = stepfunction;
   
   currentDir = 0;
   currentStepBit = 0;
   enabled = 0;
   
-  init();
 }
 
 
-ByjStepper::init() {
-   pinMode(pins[0], OUTPUT);
-   pinMode(pins[1], OUTPUT);
-   pinMode(pins[2], OUTPUT);
-   pinMode(pins[3], OUTPUT);
+ByjStepper::init(const uint8_t pin0,const uint8_t pin1,const uint8_t pin2,const uint8_t pin3) {
+   pinMode(pin0, OUTPUT);
+   pinMode(pin1, OUTPUT);
+   pinMode(pin2, OUTPUT);
+   pinMode(pin3, OUTPUT);
 }
 
 void ByjStepper::enable(const uint8_t new_enabled) {
   enabled = new_enabled;
   
     uint8_t command = (!new_enabled) ? halfSteps[currentHalfStep] : 0;
-    digitalWrite(pins[0],command & 1);
-    digitalWrite(pins[2],(command >> 1) & 1 );
-    digitalWrite(pins[1],(command >> 2) & 1);
-    digitalWrite(pins[3],(command >> 3) & 1);
+    (*internalstep)(command);
 }
 
 uint8_t ByjStepper::isEnabled() { return enabled; }
@@ -84,11 +77,7 @@ void ByjStepper::step() {
     currentHalfStep--;
   currentHalfStep = currentHalfStep % 8;
   
-  uint8_t command = halfSteps[currentHalfStep];
-  digitalWrite(pins[0],command & 1);
-  digitalWrite(pins[2],(command >> 1) & 1 );
-  digitalWrite(pins[1],(command >> 2) & 1);
-  digitalWrite(pins[3],(command >> 3) & 1);
+  (*internalstep)(halfSteps[currentHalfStep]);
   
   /*SERIAL_ECHO_START();
     SERIAL_ECHO(command & 1);
@@ -96,6 +85,7 @@ void ByjStepper::step() {
     SERIAL_ECHO((command >> 2) & 1);
     SERIAL_ECHO((command >> 3) & 1); */
 }
+
 
 
 #endif // BYJSTEPPER_H
