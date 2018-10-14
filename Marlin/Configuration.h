@@ -138,7 +138,7 @@
 
 // Optional custom name for your RepStrap or other custom machine
 // Displayed in the LCD "Ready" message
-//#define CUSTOM_MACHINE_NAME "3D Printer"
+#define CUSTOM_MACHINE_NAME "Tracey BYJ"
 
 // Define this to set a unique identifier for this printer, (Used by some programs to differentiate between machines)
 // You can use an online service to generate a random UUID. (eg http://www.uuidgenerator.net/version4)
@@ -163,7 +163,7 @@
   //#define SINGLENOZZLE_SWAP_PARK
   #if ENABLED(SINGLENOZZLE_SWAP_PARK)
     #define SINGLENOZZLE_TOOLCHANGE_POSITION { (X_MIN_POS + 10), (Y_MIN_POS + 10), 5 }
-    #define SINGLENOZZLE_PARK_XY_FEEDRATE 6000  // (mm/m)
+    #define SINGLENOZZLE_PARK_XY_FEEDRATE 6000 // (mm/m)
   #else
     #define SINGLENOZZLE_TOOLCHANGE_ZRAISE 2.0
   #endif
@@ -655,7 +655,7 @@
  * Override with M92
  *                                      X, Y, Z, E0 [, E1[, E2[, E3[, E4[, E5]]]]]
  */
-#define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 65.5, 500 } // 2064
+#define DEFAULT_AXIS_STEPS_PER_UNIT   { 50, 100, 65.5, 500 } // 2064
 
 /**
  * Default Max Feed Rate (mm/s)
@@ -670,7 +670,7 @@
  * Override with M201
  *                                      X, Y, Z, E0 [, E1[, E2[, E3[, E4[, E5]]]]]
  */
-#define DEFAULT_MAX_ACCELERATION      { 3000, 3000, 100, 10000 }
+#define DEFAULT_MAX_ACCELERATION      { 1000, 1000, 100, 10000 }
 
 /**
  * Default Acceleration (change/s) change = mm/s
@@ -1482,7 +1482,7 @@
  * you must uncomment the following option or it won't work.
  *
  */
-//#define SDSUPPORT
+#define SDSUPPORT
 
 /**
  * SD CARD: SPI SPEED
@@ -1718,7 +1718,7 @@
 // RepRapDiscount FULL GRAPHIC Smart Controller
 // http://reprap.org/wiki/RepRapDiscount_Full_Graphic_Smart_Controller
 //
-//#define REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER
+#define REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER
 
 //
 // ReprapWorld Graphical LCD
