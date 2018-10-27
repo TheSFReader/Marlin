@@ -1814,4 +1814,7 @@
 // Enable Marlin dev mode which adds some special commands
 //#define MARLIN_DEV_MODE
 
+
+
+#define USE_BYJSTEPPER
 #endif // CONFIGURATION_ADV_H

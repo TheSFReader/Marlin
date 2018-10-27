@@ -597,6 +597,34 @@ void restore_stepper_drivers() {
   #endif
 }
 
+
+
+#if ENABLED(USE_BYJSTEPPER)
+//**
+#define STEPPERFUNCTION(STEPPERNAME,PIN0, PIN1,PIN2,PIN3)  void stepfunction##STEPPERNAME(const uint8_t stepcommand) { WRITE( PIN0 ,stepcommand & 1); WRITE( PIN1 ,(stepcommand >> 2) & 1 ); WRITE( PIN2 ,(stepcommand >> 1) & 1); WRITE( PIN3,(stepcommand >> 3) & 1); }
+
+ STEPPERFUNCTION(Z,  SERVO0_PIN, SERVO1_PIN, SERVO2_PIN, SERVO3_PIN)
+ 
+/*/
+ void stepfunctionZ(const uint8_t stepcommand) {
+    WRITE(SERVO0_PIN,stepcommand & 1);
+    WRITE(SERVO1_PIN,(stepcommand >> 2) & 1 );
+    WRITE(SERVO2_PIN,(stepcommand >> 1) & 1);
+    WRITE(SERVO3_PIN,(stepcommand >> 3) & 1);
+    
+   //   SERIAL_ECHO_START();
+   // SERIAL_ECHO(stepcommand & 1);
+   // SERIAL_ECHO((stepcommand >> 1) & 1);
+   // SERIAL_ECHO((stepcommand >> 2) & 1);
+   // SERIAL_ECHOLN((stepcommand >> 3) & 1); 
+  };
+  /**/
+ 
+
+  
+ByjStepper stepperZ(&stepfunctionZ);
+#endif
+
 void reset_stepper_drivers() {
   #if HAS_DRIVER(TMC26X)
     tmc26x_init_to_defaults();
@@ -677,6 +705,10 @@ void reset_stepper_drivers() {
 
   #ifdef TMC_ADV
     TMC_ADV()
+  #endif
+  
+  #if ENABLED(USE_BYJSTEPPER)
+    stepperZ.init(SERVO0_PIN, SERVO1_PIN, SERVO2_PIN, SERVO3_PIN);
   #endif
 
   stepper.set_directions();
@@ -784,3 +816,6 @@ void reset_stepper_drivers() {
   }
 
 #endif // L6470
+
+
+
